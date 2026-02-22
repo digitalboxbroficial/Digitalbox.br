@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digitalbox.br - Experiência Premium</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;overflow-x:hidden}
+
+/* HEADER */
+header{
+background:rgba(0,0,0,.8);
+backdrop-filter:blur(15px);
+padding:20px;
+position:fixed;
+width:100%;
+top:0;
+z-index:1000;
+border-bottom:1px solid rgba(255,255,255,.05);
+opacity:0;
+}
+header .container{display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:auto}
+header h1{font-family:'Orbitron',sans-serif;letter-spacing:2px}
+nav ul{list-style:none;display:flex}
+nav ul li{margin-left:30px}
+nav ul li a{color:#fff;text-decoration:none;transition:.3s}
+nav ul li a:hover{color:#2ecc71}
+
+/* HERO */
+.hero{
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+position:relative;
+overflow:hidden
+}
+
+.tear-layer{position:absolute;width:100%;height:52%;background:#000;z-index:10}
+.tear-top{top:0}
+.tear-bottom{bottom:0}
+
+.asta-container{
+position:absolute;
+display:flex;
+justify-content:center;
+align-items:center;
+width:100%;
+height:100%
+}
+
+.asta-video{
+width:90%;
+max-width:900px;
+filter:brightness(.7) contrast(1.2);
+transform:scale(1.05)
+}
+
+.hero-content{
+z-index:15;
+text-align:center;
+opacity:0;
+transform:translateY(30px)
+}
+
+.hero h2{font-size:3rem;letter-spacing:5px;margin-bottom:10px}
+.hero p{color:#ccc;margin-bottom:30px}
+
+/* BOTÃO */
+.btn{
+background:#fff;
+color:#000;
+padding:12px 30px;
+border-radius:50px;
+text-decoration:none;
+font-weight:700;
+transition:.4s;
+display:inline-block
+}
+.btn:hover{
+transform:scale(1.05);
+box-shadow:0 0 20px rgba(255,255,255,.4)
+}
+
+/* PRODUTOS */
+.produtos{
+padding:140px 20px;
+background:#050505;
+text-align:center
+}
+
+.produto-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+gap:60px;
+max-width:1400px;
+margin:80px auto
+}
+
+.produto{
+background:#111;
+padding:30px;
+border-radius:18px;
+border:1px solid #222;
+transition:.4s;
+opacity:0;
+transform: translateY(50px)
+}
+
+.produto:hover{
+border-color:#2ecc71;
+transform:translateY(-12px)
+}
+
+.produto img{
+width:100%;
+border-radius:14px;
+margin-bottom:25px;
+transition:.4s
+}
+
+.produto img:hover{
+transform:scale(1.05)
+}
+
+/* DEPOIMENTOS */
+.depoimentos{
+padding:140px 20px;
+background:#000;
+text-align:center
+}
+
+.depo-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:50px;
+max-width:1200px;
+margin:80px auto
+}
+
+.depo{
+background:#111;
+padding:35px;
+border-radius:18px;
+border:1px solid #222;
+transition:.4s
+}
+
+.depo:hover{
+border-color:#FFD700;
+transform:translateY(-10px)
+}
+
+/* ESTRELAS */
+.stars{margin-bottom:15px}
+.stars span{
+color:#FFD700;
+font-size:1.5rem;
+margin:0 2px;
+text-shadow:0 0 8px rgba(255,215,0,.6);
+opacity:0;
+animation:starPop .5s ease forwards
+}
+
+.stars span:nth-child(1){animation-delay:.1s}
+.stars span:nth-child(2){animation-delay:.2s}
+.stars span:nth-child(3){animation-delay:.3s}
+.stars span:nth-child(4){animation-delay:.4s}
+.stars span:nth-child(5){animation-delay:.5s}
+
+@keyframes starPop{
+from{transform:scale(.5);opacity:0}
+to{transform:scale(1);opacity:1}
+}
+
+footer{
+padding:60px;
+text-align:center;
+background:#000;
+border-top:1px solid #111
+}
+
+/* ============================= */
+/* AJUSTES EXCLUSIVOS DESKTOP */
+/* ============================= */
+@media (min-width:1024px){
+
+.hero{
+min-height:60vh; /* evita espaço gigante */
+}
+
+.asta-video{
+width:45%;
+max-width:1000px;
+}
+
+.hero h2{
+font-size:4rem;
+}
+
+.produtos{
+padding-top:60px; /* aproxima da hero */
+}
+
+.produto-grid{
+grid-template-columns:repeat(3,1fr); /* 3 colunas fixas */
+gap:40px;
+}
+
+}
+</style>
+</head>
+
+<body>
+
+<header id="mainHeader">
+<div class="container">
+<h1>Digitalbox.br</h1>
+<nav>
+<ul>
+<li><a href="#home">Início</a></li>
+<li><a href="#produtos">Produtos</a></li>
+<li><a href="#contato">Contato</a></li>
+</ul>
+</nav>
+</div>
+</header>
+
+<section id="home" class="hero">
+<div class="tear-layer tear-top"></div>
+<div class="tear-layer tear-bottom"></div>
+<div class="asta-container">
+<video class="asta-video" autoplay muted loop playsinline>
+    <source src="asta-animação.mp4" type="video/mp4">
+</video>
+</div>
+<div class="hero-content" id="heroText">
+<h2>Digitalbox</h2>
+<p>Sua próxima evolução digital começa aqui.</p>
+<a href="#produtos" class="btn">Explorar Agora</a>
+</div>
+</section>
+
+<section id="produtos" class="produtos">
+<h2>Nossos Produtos:</h2>
+
+<div class="produto-grid">
+
+<div class="produto">
+<img src="venda-7dias.png">
+<h3>venda em.7dias</h3>
+<p>Conteúdo pronto para lucrar.</p>
+<div class="preco">
+R$ 19,90 ou 4x R$4,51
+</div>
+<a href="venda-7dias.html" class="btn">Ver mais</a>
+</div>
+
+<div class="produto">
+<img src="digitalbox-full.png">
+<h3>Mestre da Bolsa</h3>
+<p>experimente nosso jogo agora!.</p>
+<a href="jogo.html" class="btn">jogar agora</a>
+</div>
+
+<div class="produto">
+<img src="dinheiro.png">
+<h3>Master PLR Pack</h3>
+<p>Conteúdo pronto para lucrar.</p>
+<div class="preco">R$ 29,90 ou 6x R$5,66</div>
+<a href="pack-plr.html" class="btn">Ver mais</a>
+</div>
+
+<div class="produto">
+<img src="gráfico.png">
+<h3>Ebook Marketing</h3>
+<p>Domine os mecanismos de busca.</p>
+<div class="preco">
+R$ 85,00
+ou
+12x.R$8,71
+</div>
+<a href="ebook-marketing.html" class="btn">Ver mais</a>
+</div>
+
+<div class="produto">
+<img src="beta-reader-pro.png">
+<h3>Beta Reader Pro</h3>
+<p>Maximize seu engajamento literário.</p>
+<div class="preco">R$ 97,00 ou 12x R$9,94</div>
+<a href="beta-reader-pro.html" class="btn">Ver mais</a>
+</div>
+
+<div class="produto">
+<img src="sim-não.png">
+<h3>Destravando seu Conhecimento</h3>
+<p>Curso Para a virada de chave!.</p>
+<div class="preco">
+R$ 997,00 ou 12x R$102,19
+</div>
+<a href="destravando-seu-conhecimento.html" class="btn">Ver mais</a>
+</div>
+
+</div>
+</section>
+
+<section class="depoimentos">
+<h2>O Que Dizem Nossos Clientes:</h2>
+
+<div class="depo-grid">
+
+<div class="depo">
+<div class="stars">
+<span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+</div>
+<p>"ótimo produto, com 14 dias ja fiz minha primeira venda"</p>
+<h4>— Lucas M.</h4>
+</div>
+
+<div class="depo">
+<div class="stars">
+<span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+</div>
+<p>"Produto de ótima qualidade."</p>
+<h4>— Miguel S.</h4>
+</div>
+
+<div class="depo">
+<div class="stars">
+<span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+</div>
+<p>"Design absurdo e conteúdo que realmente entrega."</p>
+<h4>— Mariana R.</h4>
+</div>
+
+<div class="depo">
+<div class="stars">
+<span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+</div>
+<p>"Vale cada centavo. Produto nível internacional."</p>
+<h4>— Felipe S.</h4>
+</div>
+
+<div class="depo">
+<div class="stars">
+<span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+</div>
+<p>"Produto incrível, nota 10."</p>
+<h4>— Matheus E.</h4>
+</div>
+
+<div class="depo">
+<div class="stars">
+<span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+</div>
+<p>"Ótimo curso, podem comprar sem medo."</p>
+<h4>— Diego R.</h4>
+</div>
+
+</div>
+</section>
+
+<footer id="contato">
+<p>&copy; 2026 Digitalbox.br - Todos os direitos reservados.</p>
+<div class="social">
+<a href="https://www.instagram.com/digitalbox.br?igsh=aXE0YTM3NmFwbG1x">Instagram</a>
+</div>
+</footer>>
+
+<script>
+window.addEventListener('load',()=>{
+
+  gsap.registerPlugin(ScrollTrigger)
+
+  const tl=gsap.timeline()
+  tl.to(".tear-top",{yPercent:-105,duration:2,delay:1})
+  tl.to(".tear-bottom",{yPercent:105,duration:2},"-=2")
+  tl.to("#mainHeader",{opacity:1,duration:1},"-=1")
+  tl.to("#heroText",{opacity:1,y:0,duration:1.5},"-=0.5")
+
+  // animação de produtos ao scroll
+  gsap.utils.toArray(".produto").forEach((produto, i)=>{
+    gsap.to(produto,{
+      opacity:1,
+      y:0,
+      duration:1,
+      delay:i*0.2,
+      ease:"power3.out",
+      scrollTrigger:{
+        trigger:produto,
+        start:"top 80%",
+        toggleActions:"play none none none"
+      }
+    })
+  })
+
+  // ================================
+  // ANIMAÇÃO PREMIUM DEPOIMENTOS
+  // ================================
+
+  gsap.utils.toArray(".depo").forEach((card, i)=>{
+
+    // entrada suave
+    gsap.from(card,{
+      opacity:0,
+      y:80,
+      duration:1,
+      delay:i*0.2,
+      ease:"power3.out",
+      scrollTrigger:{
+        trigger:card,
+        start:"top 85%",
+        toggleActions:"play none none none",
+        onEnter:()=>{
+          card.style.boxShadow="0 0 35px rgba(255,215,0,.15)"
+        }
+      }
+    })
+
+  })
+
+  // leve flutuação contínua
+  gsap.to(".depo",{
+    y:8,
+    duration:2.5,
+    repeat:-1,
+    yoyo:true,
+    ease:"sine.inOut",
+    stagger:0.3
+  })
+
+})
+</script>
+
+</body>
+</html>

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mestre da Bolsa - Digitalbox</title>
+    <style>
+        :root {
+            --bg-dark: #0a0a0a;
+            --card-bg: rgba(30, 30, 30, 0.7);
+            --primary-green: #00c853;
+            --secondary-green: #1b5e20;
+            --text-white: #ffffff;
+            --text-gray: #a0a0a0;
+            --error: #ff5252;
+            --gold: #ffd700;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins','Segoe UI',sans-serif; }
+        body { background-color: var(--bg-dark); background-image: radial-gradient(circle at 20% 80%, rgba(0,200,83,0.15) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(0,230,118,0.1) 0%, transparent 50%); color: var(--text-white); min-height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .game-container { width: 90%; max-width: 620px; padding: 40px 30px; background: var(--card-bg); backdrop-filter: blur(20px); border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px rgba(0,0,0,0.5); text-align: center; position: relative; }
+        .logo { margin-bottom: 15px; text-align: center; }
+        .logo img { max-height: 80px; width: auto; filter: drop-shadow(0 4px 12px rgba(0,200,83,0.4)); }
+        .logo-hero img { max-width: 340px; height: auto; border-radius: 80px; box-shadow: 0 15px 40px rgba(0,0,0,0.7); }
+        h1 { font-size:2.3rem; margin-bottom:8px; background:linear-gradient(135deg,#fff 0%,var(--primary-green)100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-weight:800; }
+        .subtitle { color:var(--text-gray); font-size:1rem; margin-bottom:25px; }
+        .progress-container { width:100%; height:8px; background:rgba(255,255,255,0.1); border-radius:10px; margin:20px 0; overflow:hidden; }
+        .progress-bar { height:100%; background:linear-gradient(90deg,var(--secondary-green),var(--primary-green)); border-radius:10px; width:0%; transition:width .6s ease; box-shadow:0 0 12px var(--primary-green); }
+        .round-indicator { font-size:0.85rem; color:var(--primary-green); font-weight:600; margin-bottom:12px; letter-spacing:1px; }
+        .question-box { background:rgba(0,0,0,0.35); padding:25px; border-radius:16px; margin-bottom:25px; border:1px solid rgba(255,255,255,0.05); min-height:110px; }
+        .question-text { font-size:1.22rem; line-height:1.45; font-weight:500; }
+        .options-grid { display:flex; flex-direction:column; gap:12px; }
+        .btn-option { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); color:var(--text-white); padding:16px 20px; border-radius:12px; cursor:pointer; font-size:0.96rem; text-align:left; transition:all .3s ease; display:flex; align-items:center; }
+        .btn-option:hover:not(:disabled) { background:rgba(0,200,83,0.15); border-color:var(--primary-green); transform:translateX(6px); }
+        .option-letter { width:30px; height:30px; background:rgba(255,255,255,0.1); border-radius:8px; display:flex; align-items:center; justify-content:center; margin-right:14px; font-weight:bold; font-size:0.88rem; flex-shrink:0; }
+        .btn-option.correct { background:linear-gradient(135deg,rgba(0,200,83,0.45),rgba(0,200,83,0.2)); border-color:var(--primary-green); }
+        .btn-option.correct .option-letter { background:var(--primary-green); color:#000; }
+        .btn-option.wrong { background:rgba(255,82,82,0.25); border-color:var(--error); }
+        .btn-option.wrong .option-letter { background:var(--error); }
+        .btn-main { background:linear-gradient(135deg,var(--primary-green),var(--secondary-green)); color:white; border:none; padding:16px 40px; font-size:1.02rem; font-weight:700; border-radius:50px; cursor:pointer; text-transform:uppercase; letter-spacing:2px; transition:all .3s; box-shadow:0 10px 30px rgba(0,200,83,0.35); margin-top:15px; }
+        .btn-main:hover { transform:translateY(-4px); box-shadow:0 18px 45px rgba(0,200,83,0.5); }
+        .screen { display:none; animation:fadeIn .5s ease; }
+        .screen.active { display:block; }
+        .score-display { font-size:5.2rem; font-weight:800; background:linear-gradient(135deg,var(--gold),var(--primary-green)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin:15px 0; }
+        .cta-container { background:linear-gradient(135deg,rgba(27,94,32,0.45),rgba(0,50,0,0.65)); border:1px solid var(--primary-green); border-radius:20px; padding:28px 25px; margin-top:30px; }
+        .cta-title { font-size:1.35rem; margin-bottom:8px; }
+        .cta-desc { color:var(--text-gray); font-size:0.93rem; line-height:1.55; margin-bottom:20px; }
+        .btn-buy { background:white; color:var(--secondary-green); border:none; padding:15px 35px; font-size:1rem; font-weight:800; border-radius:50px; cursor:pointer; text-transform:uppercase; width:100%; transition:all .3s; }
+        .btn-buy:hover { transform:scale(1.04); }
+        #explanation-box { display:none; margin:25px 0 15px; padding:22px; background:rgba(0,200,83,0.12); border:1px solid var(--primary-green); border-radius:16px; text-align:left; font-size:0.97rem; line-height:1.55; color:#ddd; }
+        #explanation-box strong { color:var(--primary-green); }
+        @keyframes fadeIn { from{opacity:0; transform:scale(0.94);} to{opacity:1; transform:scale(1);} }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <!-- TELA INICIAL -->
+        <div id="start-screen" class="screen active">
+            <div class="logo logo-hero">
+                <img src="digitalbox-full.png" alt="Digitalbox">
+            </div>
+            <h1>Mestre da Bolsa</h1>
+            <p class="subtitle">Aprenda investimentos brincando</p>
+            <div class="question-box">
+                <p style="font-size:3.2rem;margin-bottom:10px;">📈</p>
+                <p style="color:var(--text-gray);">Parte 1 GRÁTIS • 7 perguntas</p>
+            </div>
+            <button class="btn-main" onclick="startPart1()">COMEÇAR PARTE 1 GRÁTIS</button>
+        </div>
+
+        <!-- TELA DO JOGO -->
+        <div id="game-screen" class="screen">
+            <div class="logo">
+                <img src="db-logo.png" alt="DB Digitalbox">
+            </div>
+            <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
+            <div class="round-indicator" id="round-indicator">PERGUNTA 1 DE 7</div>
+            <div class="question-box">
+                <h2 class="question-text" id="question-text">Carregando...</h2>
+            </div>
+            <div class="options-grid" id="options-container"></div>
+            <div id="explanation-box">
+                <strong id="result-text"></strong><br>
+                <span id="explanation-text"></span>
+            </div>
+            <button id="next-btn" class="btn-main" onclick="nextQuestion()" style="display:none;">Próxima Pergunta →</button>
+        </div>
+
+        <!-- TELA FIM PARTE 1 -->
+        <div id="part1-end-screen" class="screen">
+            <div class="logo">
+                <img src="db-logo.png" alt="DB Digitalbox">
+            </div>
+            <h1>Parte 1 Concluída!</h1>
+            <div class="score-display" id="part1-score">0</div>
+            <p class="subtitle">Você acertou <span id="part1-text">0</span> de 7</p>
+            
+            <div class="cta-container">
+                <h3 class="cta-title">🔓 Quer aprender de verdade?</h3>
+                <p class="cta-desc">Desbloqueie o <strong>Curso Completo</strong> com <strong>60 perguntas explicadas</strong>, vídeos-aulas e certificado por apenas <strong>R$ 29,90</strong></p>
+                
+                <button class="btn-buy" onclick="goToCheckout()">COMPRAR AGORA NO KIWIFY - R$ 29,90</button>
+                
+                <button onclick="unlockPaidMode()" 
+                        style="margin-top:18px; background:transparent; border:1px solid #666; color:#ccc; padding:14px 30px; border-radius:50px; cursor:pointer; font-size:0.95rem; width:100%;">
+                    🔑 Já paguei • Digitar código de acesso
+                </button>
+            </div>
+            
+            <button class="btn-main" style="background:transparent;border:1px solid #555;margin-top:15px;" onclick="location.reload()">Refazer Parte 1</button>
+        </div>
+
+        <!-- TELA FINAL -->
+        <div id="end-screen" class="screen">
+            <div class="logo">
+                <img src="db-logo.png" alt="DB Digitalbox">
+            </div>
+            <h1>Parabéns, Mestre da Bolsa! 🎉</h1>
+            <div class="score-display" id="final-score">0</div>
+            <p class="subtitle">Você acertou <span id="score-text">0</span> de 75 perguntas explicadas</p>
+            <button class="btn-main" onclick="location.reload()">Jogar Novamente</button>
+        </div>
+    </div>
+
+    <script>
+    // === LIMPEZA AUTOMÁTICA PARA TESTE ===
+    localStorage.removeItem('mestreBolsaUnlocked');
+    localStorage.removeItem('mestreBolsaAccessCode');
+
+    // ====================== PERGUNTAS PARTE 1 (GRÁTIS) ======================
+    const questionsPart1 = [
+        { q: "O que é o Ibovespa?", options: ["Uma taxa do governo", "O índice da bolsa brasileira", "Uma ação da Petrobrás", "Um imposto"], correct: 1 },
+        { q: "O que são Dividendos?", options: ["Taxa de manutenção", "Parte do lucro pago ao acionista", "Valor mínimo para investir", "Empréstimo"], correct: 1 },
+        { q: "O que é 'Mercado em Alta'?", options: ["Queda das ações", "Crise econômica", "Otimismo e preços subindo", "Aumento de impostos"], correct: 2 },
+        { q: "O que é um BDR?", options: ["Bolsa do RJ", "Ação estrangeira no Brasil", "Título do governo", "Criptomoeda"], correct: 1 },
+        { q: "Para que serve uma Corretora?", options: ["Imprimir dinheiro", "Intermediar compra/venda de ações", "Vender seguros", "Fixar juros"], correct: 1 },
+        { q: "O que é diversificar?", options: ["Colocar tudo num ativo só", "Investir em vários tipos", "Guardar em casa", "Comprar só ouro"], correct: 1 },
+        { q: "Qual risco principal das Small Caps?", options: ["Nunca pagam dividendos", "Alta volatilidade", "Taxa de 50%", "São isentas"], correct: 1 }
+    ];
+
+    // ====================== 75 PERGUNTAS PAGAS (COMPLETAS) ======================
+    const questionsPaid = [
+        { q: "O que significa a sigla PETR4?", options: ["Ação ordinária da Petrobras", "Ação preferencial da Petrobras", "BDR da Petrobras", "Fundo Imobiliário da Petrobras"], correct: 1, exp: "PETR4 é a ação <strong>preferencial</strong> (prioridade em dividendos, sem direito a voto)." },
+        { q: "O que é o mini-índice (WIN)?", options: ["Contrato futuro do Ibovespa com tamanho reduzido", "ETF do Ibovespa", "Ação de small cap", "Fundo de investimento"], correct: 0, exp: "O WIN tem multiplicador de 0,2 ponto do Ibovespa. Cada ponto vale R$ 1,00." },
+        { q: "O que significa DY em um FII?", options: ["Dividend Yield", "Preço/Valor Patrimonial", "Taxa de vacância", "Retorno sobre patrimônio"], correct: 0, exp: "DY = proventos distribuídos nos últimos 12 meses ÷ preço da cota. Bons FIIs entregam 8-12% ao ano." },
+        { q: "Qual é o principal índice da B3?", options: ["S&P 500", "Ibovespa", "NASDAQ", "Dow Jones"], correct: 1, exp: "O Ibovespa é o principal índice da bolsa brasileira e reflete o desempenho das ações mais negociadas." },
+        { q: "O que é uma ação ON?", options: ["Ordinária - dá direito a voto", "Preferencial - prioridade em dividendos", "Unit - mistura de ON+PN", "BDR - ação estrangeira"], correct: 0, exp: "Ações ON (ordinárias) dão direito a voto nas assembleias da empresa." },
+        { q: "O que significa ROE?", options: ["Retorno sobre o Patrimônio Líquido", "Relação Preço/Lucro", "Lucro por Ação", "Dividend Yield"], correct: 0, exp: "ROE mede a eficiência da empresa em gerar lucro com o capital dos acionistas." },
+        { q: "Qual o imposto sobre day trade em ações?", options: ["15%", "20%", "0%", "17,5%"], correct: 1, exp: "Day trade em ações paga 20% de IR na fonte. Vendas normais até R$ 20 mil/mês são isentas." },
+        { q: "O que é P/L?", options: ["Preço sobre Lucro", "Preço sobre Patrimônio", "Preço sobre Vendas", "Preço sobre EBITDA"], correct: 0, exp: "P/L indica quantos anos de lucro a empresa precisa para 'pagar' o preço atual da ação." },
+        { q: "O que é um FII?", options: ["Fundo Imobiliário", "Fundo de Investimento em Ações", "Fundo de Renda Fixa", "Fundo Cambial"], correct: 0, exp: "FII = Fundo de Investimento Imobiliário. Você investe em imóveis sem comprar o imóvel físico." },
+        { q: "O que significa 'liquidez' em uma ação?", options: ["Facilidade de comprar/vender sem afetar o preço", "Quanto a empresa deve", "Rendimento anual", "Imposto pago"], correct: 0, exp: "Ações com alta liquidez têm muitos compradores e vendedores todos os dias." },
+        { q: "Qual o código do mini-dólar na B3?", options: ["WIN", "WDO", "DOL", "IND"], correct: 1, exp: "WDO é o mini-contrato de dólar futuro (multiplicador de US$ 10)." },
+        { q: "O que é Tesouro Selic?", options: ["Título pós-fixado atrelado à Selic", "Título prefixado", "Título atrelado à inflação", "Ação do governo"], correct: 0, exp: "É o título mais seguro do Brasil e rende próximo da taxa Selic." },
+        { q: "O que acontece se uma empresa pagar dividendos?", options: ["O preço da ação cai no mesmo valor (ex-dividendo)", "A ação sobe", "Nada acontece", "A empresa vai à falência"], correct: 0, exp: "No dia do pagamento, a ação abre 'ex-dividendo' e cai aproximadamente o valor do provento." },
+        { q: "O que é um ETF?", options: ["Fundo que replica um índice", "Ação individual", "CDB bancário", "Fundo de previdência"], correct: 0, exp: "Exemplo: BOVA11 replica o Ibovespa." },
+        { q: "Qual a diferença entre CDB e Tesouro Direto?", options: ["CDB é emitido por banco privado, Tesouro pelo governo", "Tesouro paga mais sempre", "CDB não tem IR", "São iguais"], correct: 0, exp: "Tesouro tem garantia do governo federal. CDB tem garantia do FGC até R$ 250 mil." },
+        { q: "O que significa 'bull market'?", options: ["Mercado em alta", "Mercado em baixa", "Mercado lateral", "Mercado de opções"], correct: 0, exp: "Bull = touro = mercado otimista com preços subindo." },
+        { q: "O que é stop loss?", options: ["Ordem automática para vender se o preço cair", "Ordem para comprar mais", "Lucro garantido", "Imposto"], correct: 0, exp: "Protege contra grandes perdas." },
+        { q: "Qual o principal risco de investir só em uma ação?", options: ["Risco concentrado / falta de diversificação", "Risco de inflação", "Risco de juros", "Risco cambial"], correct: 0, exp: "Nunca coloque todos os ovos na mesma cesta." },
+        { q: "O que é LCI/LCA?", options: ["Letra de Crédito Imobiliário / do Agronegócio - isenta de IR", "Ação de banco", "Fundo de ações", "Título prefixado"], correct: 0, exp: "Isentas de IR para pessoa física." },
+        { q: "O que é análise fundamentalista?", options: ["Analisar balanços e fundamentos da empresa", "Analisar gráficos e padrões", "Seguir notícias do dia", "Copiar influencers"], correct: 0, exp: "Foca no valor real da empresa." },
+        { q: "O que é análise técnica?", options: ["Estudar gráficos e indicadores", "Ler balanços", "Entrevistar diretores", "Prever inflação"], correct: 0, exp: "Usa preço e volume para prever movimento futuro." },
+        { q: "Qual a taxa máxima de corretagem em corretoras modernas?", options: ["Zero ou muito baixa (R$ 0,00)", "Sempre 1%", "5%", "10%"], correct: 0, exp: "Hoje quase todas as corretoras oferecem corretagem zero." },
+        { q: "O que significa 'home broker'?", options: ["Plataforma online para negociar ações", "Corretor físico", "Banco digital", "App de delivery"], correct: 0, exp: "É o sistema que você usa para comprar e vender pela internet." },
+        { q: "O que é um Unit (UNT)?", options: ["Pacote com ON + PN + bônus", "Ação preferencial", "FII", "BDR"], correct: 0, exp: "Exemplo: TAEE11 = 1 ON + 2 PN." },
+        { q: "Qual o prazo de liquidação de ações na B3?", options: ["T+2 (dois dias úteis)", "T+0 (mesmo dia)", "T+30", "T+1"], correct: 0, exp: "O dinheiro e as ações são liquidados em D+2." },
+        { q: "O que é 'short selling'?", options: ["Vender ação que não tem (aluguel)", "Comprar ação barata", "Manter ação por 1 ano", "Comprar no pré-market"], correct: 0, exp: "Apostar na queda do preço." },
+        { q: "O que é o circuit breaker na B3?", options: ["Paralisação automática quando cai muito", "Aumento de taxa", "Horário de almoço", "Feriado"], correct: 0, exp: "Ativado com queda de 10%, 15% e 20% no Ibovespa." },
+        { q: "Qual o imposto em FIIs para pessoa física?", options: ["20% sobre ganho de capital + isenção em rendimentos mensais se >50 cotistas", "15%", "Isento total", "30%"], correct: 0, exp: "Rendimentos mensais são isentos se o fundo tiver mais de 50 cotistas e não for concentrado." },
+        { q: "O que é um call de opção?", options: ["Direito de comprar a ação no futuro", "Direito de vender", "Contrato futuro", "Swap"], correct: 0, exp: "Call = aposta na alta." },
+        { q: "O que é put de opção?", options: ["Direito de vender a ação no futuro", "Direito de comprar", "Contrato de milho", "CDB"], correct: 0, exp: "Put = aposta na baixa." },
+        { q: "O que significa 'beta' de uma ação?", options: ["Volatilidade em relação ao Ibovespa", "Preço da ação", "Dividend yield", "P/L"], correct: 0, exp: "Beta 1 = anda junto com o mercado. Beta >1 = mais volátil." },
+        { q: "O que é 'earnings'?", options: ["Lucro por ação (EPS)", "Preço da ação", "Volume negociado", "Taxa de juros"], correct: 0, exp: "Resultados trimestrais das empresas." },
+        { q: "Qual o melhor investimento para reserva de emergência?", options: ["Tesouro Selic ou CDB liquidez diária", "Ações", "FIIs", "Criptomoedas"], correct: 0, exp: "Precisa de liquidez imediata e segurança." },
+        { q: "O que é 'rebalanceamento' de carteira?", options: ["Ajustar % de cada ativo periodicamente", "Vender tudo", "Comprar mais do mesmo", "Trocar de corretora"], correct: 0, exp: "Manter o risco controlado." },
+        { q: "O que significa 'yield on cost'?", options: ["Dividend yield baseado no preço que você pagou", "DY atual", "ROE", "P/L"], correct: 0, exp: "Quanto maior o tempo, maior pode ficar o yield sobre o custo original." },
+        { q: "Qual o risco principal de investir em criptomoedas?", options: ["Alta volatilidade e regulação incerta", "Baixo rendimento", "Imposto zero", "Garantia do governo"], correct: 0, exp: "Pode cair 50% em poucos dias." },
+        { q: "O que é 'dollar cost averaging' (DCA)?", options: ["Investir valores fixos todo mês independente do preço", "Comprar tudo de uma vez", "Vender no topo", "Day trade"], correct: 0, exp: "Estratégia clássica de longo prazo." },
+        { q: "Qual o papel da CVM?", options: ["Regular o mercado de capitais", "Emitir dinheiro", "Cobrar impostos", "Gerir o Tesouro"], correct: 0, exp: "Comissão de Valores Mobiliários." },
+        { q: "O que é 'IPO'?", options: ["Oferta Pública Inicial - empresa estreia na bolsa", "Aumento de capital", "Pagamento de dividendos", "Fusão de empresas"], correct: 0, exp: "Quando a empresa abre capital." },
+        { q: "O que significa 'blue chip'?", options: ["Ação de empresa grande e sólida", "Ação barata", "Small cap", "FII"], correct: 0, exp: "Ex: PETR4, VALE3, ITUB4." },
+        { q: "O que é 'earning yield'?", options: ["Lucro por ação / preço (inverso do P/L)", "Dividend yield", "ROE", "Beta"], correct: 0, exp: "Quanto a empresa 'paga' de lucro por real investido." },
+        { q: "Qual a vantagem de investir via Tesouro Direto?", options: ["Baixo custo, liquidez e segurança", "Alta rentabilidade garantida", "Isenção total de IR", "Exposição internacional"], correct: 0, exp: "Melhor custo-benefício para conservadores." },
+        { q: "O que é 'volatilidade'?", options: ["Oscilação de preço", "Rendimento médio", "Imposto", "Volume"], correct: 0, exp: "Quanto mais volátil, maior o risco (e potencial retorno)." },
+        { q: "O que significa 'market cap'?", options: ["Valor de mercado da empresa (preço × quantidade de ações)", "Lucro anual", "Dividendos pagos", "Dívida"], correct: 0, exp: "Small / Mid / Large cap." },
+        { q: "Qual o horário de pregão da B3?", options: ["10h às 17h (normal) / 18h (after market)", "8h às 16h", "24h", "Só pela manhã"], correct: 0, exp: "After market até 18h para alguns ativos." },
+        { q: "O que é 'swing trade'?", options: ["Operação de dias a semanas", "Day trade (mesmo dia)", "Buy and hold (anos)", "Scalping (segundos)"], correct: 0, exp: "Aproveita oscilações médias." },
+        { q: "O que é 'scalping'?", options: ["Operações de segundos/minutos", "Investimento de longo prazo", "FII mensal", "Tesouro"], correct: 0, exp: "Muitas operações pequenas no dia." },
+        { q: "Qual o principal objetivo de um FOF (Fundo de Fundos)?", options: ["Diversificar entre vários FIIs", "Comprar imóveis físicos", "Fazer day trade", "Emitir ações"], correct: 0, exp: "Você investe em vários FIIs com pouco dinheiro." },
+        { q: "O que significa 'P/VP'?", options: ["Preço sobre Valor Patrimonial", "Preço sobre Lucro", "Preço sobre Vendas", "Preço sobre EBITDA"], correct: 0, exp: "P/VP < 1 = ação negociando abaixo do patrimônio líquido." },
+        { q: "O que é 'margin call'?", options: ["Chamada de margem - corretora exige mais garantia", "Lucro automático", "Compra a prazo", "Venda a descoberto"], correct: 0, exp: "Acontece em operações alavancadas." },
+        { q: "Qual a vantagem de ações preferenciais (PN)?", options: ["Prioridade na distribuição de dividendos", "Mais direito a voto", "Menor preço sempre", "Isentas de IR"], correct: 0, exp: "Geralmente pagam mais dividendos que as ON." },
+        { q: "O que é 'debênture'?", options: ["Título de dívida de empresa privada", "Ação", "Fundo", "CDB"], correct: 0, exp: "Renda fixa corporativa (pode ter risco maior)." },
+        { q: "O que significa 'rating' de um título?", options: ["Classificação de risco de crédito", "Preço da ação", "Volume", "DY"], correct: 0, exp: "AAA = mais seguro." },
+        { q: "Qual o imposto em fundos de ações (FIAs)?", options: ["15% sobre ganho de capital", "20%", "Isento", "27,5%"], correct: 0, exp: "Alíquota única de 15% no resgate." },
+        { q: "O que é 'carry trade'?", options: ["Pegar dinheiro barato em um país e investir em outro com juros altos", "Day trade", "Buy and hold", "Scalping"], correct: 0, exp: "Clássico: dólar baixo + juros altos no Brasil." },
+        { q: "O que significa 'diversificação internacional'?", options: ["Investir em BDRs ou ETFs globais", "Só ações brasileiras", "Só Tesouro", "Só FIIs"], correct: 0, exp: "Protege contra risco Brasil." },
+        { q: "Qual a diferença entre renda fixa e variável?", options: ["Renda fixa tem rendimento previsível, variável não", "Variável sempre rende mais", "Fixa não tem IR", "Variável não tem risco"], correct: 0, exp: "Renda variável depende do mercado." },
+        { q: "O que é 'alavancagem'?", options: ["Usar dinheiro emprestado para investir mais", "Diversificar", "Guardar dinheiro", "Pagar dívida"], correct: 0, exp: "Aumenta tanto ganhos quanto perdas." },
+        { q: "O que é 'psicologia do investidor'?", options: ["Controlar emoções para não vender no pânico ou comprar no topo", "Ler gráficos", "Calcular P/L", "Escolher FII"], correct: 0, exp: "Maior inimigo do investidor é ele mesmo." },
+        { q: "Qual o conselho clássico de Warren Buffett?", options: ["Seja medroso quando os outros são gananciosos e ganancioso quando os outros são medrosos", "Compre só ações baratas", "Venda tudo em crise", "Invista só em cripto"], correct: 0, exp: "Compre com medo, venda com euforia." }
+    ];
+
+    // ====================== CÓDIGOS DE ACESSO ======================
+    const VALID_ACCESS_CODES = [
+        "MB2026-PRO",
+        "MESTREBOLSA29"
+    ];
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // === EMBARALHA AS ALTERNATIVAS DE CADA PERGUNTA ===
+    function shuffleOptions(question) {
+        const correctText = question.options[question.correct];
+        const shuffledOptions = shuffle([...question.options]);
+        const newCorrectIndex = shuffledOptions.indexOf(correctText);
+
+        return {
+            ...question,
+            options: shuffledOptions,
+            correct: newCorrectIndex
+        };
+    }
+
+    let currentQuestions = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let isPaidMode = false;
+    let totalQuestionsDisplayed = 7;
+
+    function startPart1() {
+        isPaidMode = false;
+        currentQuestions = shuffle([...questionsPart1]).map(q => shuffleOptions(q));
+        totalQuestionsDisplayed = currentQuestions.length;
+        currentQuestionIndex = 0;
+        score = 0;
+        document.getElementById('start-screen').classList.remove('active');
+        document.getElementById('game-screen').classList.add('active');
+        loadQuestion();
+    }
+
+    function startPaidMode() {
+        isPaidMode = true;
+        currentQuestions = shuffle([...questionsPaid]).map(q => shuffleOptions(q));
+        totalQuestionsDisplayed = currentQuestions.length;
+        currentQuestionIndex = 0;
+        score = 0;
+        document.getElementById('part1-end-screen').classList.remove('active');
+        document.getElementById('game-screen').classList.add('active');
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        const q = currentQuestions[currentQuestionIndex];
+        document.getElementById('question-text').innerText = q.q;
+        document.getElementById('round-indicator').innerText = `PERGUNTA ${currentQuestionIndex + 1} DE ${totalQuestionsDisplayed}`;
+        document.getElementById('progress-bar').style.width = ((currentQuestionIndex) / totalQuestionsDisplayed * 100) + '%';
+
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+        q.options.forEach((opt, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'btn-option';
+            btn.innerHTML = `<span class="option-letter">${String.fromCharCode(65 + i)}</span> ${opt}`;
+            btn.onclick = () => selectAnswer(i, btn);
+            container.appendChild(btn);
+        });
+
+        document.getElementById('explanation-box').style.display = 'none';
+        document.getElementById('next-btn').style.display = 'none';
+    }
+
+    function selectAnswer(selectedIndex, clickedBtn) {
+        const q = currentQuestions[currentQuestionIndex];
+        const correctIndex = q.correct;
+        const allBtns = document.querySelectorAll('.btn-option');
+        allBtns.forEach(btn => btn.disabled = true);
+
+        if (selectedIndex === correctIndex) {
+            score++;
+            clickedBtn.classList.add('correct');
+        } else {
+            clickedBtn.classList.add('wrong');
+            allBtns[correctIndex].classList.add('correct');
+        }
+
+        if (isPaidMode) {
+            document.getElementById('result-text').innerHTML = selectedIndex === correctIndex ? '✅ Parabéns! Resposta correta.' : `❌ A correta é: <strong>${q.options[correctIndex]}</strong>`;
+            document.getElementById('explanation-text').innerHTML = q.exp || '';
+            document.getElementById('explanation-box').style.display = 'block';
+            document.getElementById('next-btn').style.display = 'block';
+        } else {
+            setTimeout(nextQuestion, 1400);
+        }
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < currentQuestions.length) loadQuestion();
+        else showEndScreen();
+    }
+
+    function showEndScreen() {
+        document.getElementById('game-screen').classList.remove('active');
+        if (!isPaidMode) {
+            document.getElementById('part1-end-screen').classList.add('active');
+            document.getElementById('part1-score').innerText = score;
+            document.getElementById('part1-text').innerText = score;
+        } else {
+            document.getElementById('end-screen').classList.add('active');
+            document.getElementById('final-score').innerText = score;
+            document.getElementById('score-text').innerText = `${score} de 75`;
+        }
+    }
+
+    function goToCheckout() {
+        window.open('https://pay.kiwify.com.br/SXQ5VFL', '_blank');
+    }
+
+    function unlockPaidMode() {
+        const input = prompt("🔑 Digite seu código de acesso\n(enviado apos pagamento após o pagamento no Kiwify):");
+        if (!input) return;
+        const code = input.trim().toUpperCase();
+        if (VALID_ACCESS_CODES.includes(code)) {
+            localStorage.setItem('mestreBolsaUnlocked', 'true');
+            localStorage.setItem('mestreBolsaAccessCode', code);
+            alert("✅ Código válido! Liberando as 60 perguntas agora...");
+            startPaidMode();
+        } else {
+            alert("❌ Código inválido ou expirado.\n\nVerifique o email de confirmação do Kiwify ou entre em contato com o suporte.");
+        }
+    }
+
+    function checkAutoUnlock() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('paid') === 'true' || urlParams.get('paid') === 'success') {
+            localStorage.setItem('mestreBolsaUnlocked', 'true');
+            history.replaceState({}, document.title, window.location.pathname);
+            const msg = document.createElement('div');
+            msg.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#00c853;color:#000;padding:16px 32px;border-radius:50px;font-weight:700;z-index:9999;box-shadow:0 10px 30px rgba(0,200,83,0.4);';
+            msg.innerHTML = '✅ Pagamento confirmado! Liberando as 60 perguntas agora...';
+            document.body.appendChild(msg);
+            setTimeout(() => { msg.remove(); startPaidMode(); }, 1800);
+            return true;
+        }
+        return false;
+    }
+
+    window.onload = () => {
+        if (!checkAutoUnlock()) {
+            if (localStorage.getItem('mestreBolsaUnlocked') === 'true') {
+                startPaidMode();
+            } else {
+                document.getElementById('start-screen').classList.add('active');
+            }
+        }
+    };
+    </script>
+</body>
+</html>
